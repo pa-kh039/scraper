@@ -2,6 +2,9 @@ import requests
 import time
 import json
 import gzip
+import logging
+
+logging.basicConfig(level=logging.INFO)
 
 class GrabDataExtractor:
     def __init__(self):
@@ -29,50 +32,58 @@ class GrabDataExtractor:
 
     def fetch_data(self):
         data = []
-        has_more = True
+        try:
+            has_more = True
+            logging.info("Fetching data for GrabFood website")
+            while has_more:
+                response = requests.request("POST", self.url, headers=self.headers, data=str(self.payload))
+                res_json = response.json()
+                if not res_json['searchResult'].get('searchMerchants'):
+                    break
+                for restaurant in res_json['searchResult']['searchMerchants']:
+                    restaurant_name = restaurant['merchantBrief']['displayInfo']['primaryText']
+                    restaurant_cuisine = ", ".join(restaurant['merchantBrief']['cuisine'])
+                    restaurant_rating = restaurant['merchantBrief']['rating']
+                    restaurant_estim_delivery_time = str(restaurant['estimatedDeliveryTime']) + " mins"
+                    restaurant_distance = str(restaurant['merchantBrief']['distanceInKm']) + " km"
+                    restaurant_promos = restaurant['merchantBrief']['promo'].get('description')
+                    restaurant_notice = restaurant.get('closingSoonText')
+                    restaurant_photo = restaurant['merchantBrief']['photoHref']
+                    restaurant_promo_available = restaurant['merchantBrief']['promo'].get('hasPromo',False)
+                    restaurant_id = restaurant['id']
+                    restaurant_lat_long = (restaurant['latlng']['latitude'], restaurant['latlng']['longitude'])
+                    restaurant_estim_delivery_fee = restaurant['estimatedDeliveryFee']['priceDisplay']
 
-        while has_more:
-            response = requests.request("POST", self.url, headers=self.headers, data=str(self.payload))
-            res_json = response.json()
-            for restaurant in res_json['searchResult']['searchMerchants']:
-                restaurant_name = restaurant['merchantBrief']['displayInfo']['primaryText']
-                restaurant_cuisine = ", ".join(restaurant['merchantBrief']['cuisine'])
-                restaurant_rating = restaurant['merchantBrief']['rating']
-                restaurant_estim_delivery_time = str(restaurant['estimatedDeliveryTime']) + " mins"
-                restaurant_distance = str(restaurant['merchantBrief']['distanceInKm']) + " km"
-                restaurant_promos = restaurant['merchantBrief']['promo'].get('description')
-                restaurant_notice = restaurant.get('notice')   #######
-                restaurant_photo = restaurant['merchantBrief']['photoHref']
-                restaurant_promo_available = restaurant['merchantBrief']['promo'].get('hasPromo',False)
-                restaurant_id = restaurant['id']
-                restaurant_lat_long = (restaurant['latlng']['latitude'], restaurant['latlng']['longitude'])
-                restaurant_estim_delivery_fee = restaurant['estimatedDeliveryFee']['priceDisplay']
+                    data.append(
+                        {
+                            'Restaurant Name': restaurant_name,
+                            'Restaurant Cuisine': restaurant_cuisine,
+                            'Restaurant Rating': restaurant_rating,
+                            'Estimated time of Delivery': restaurant_estim_delivery_time,
+                            'Restaurant Distance from Delivery Location': restaurant_distance,
+                            'Promotional Offers': restaurant_promos,
+                            'Restaurant Notice': restaurant_notice,
+                            'Image Link': restaurant_photo,
+                            'Is promo available': restaurant_promo_available,
+                            'Restaurant ID': restaurant_id,
+                            'Restaurant latitude and longitude': restaurant_lat_long,
+                            'Estimated Delivery Fee': restaurant_estim_delivery_fee
+                        }
+                    )
 
-                data.append(
-                    {
-                        'Restaurant Name': restaurant_name,
-                        'Restaurant Cuisine': restaurant_cuisine,
-                        'Restaurant Rating': restaurant_rating,
-                        'Estimated time of Delivery': restaurant_estim_delivery_time,
-                        'Restaurant Distance from Delivery Location': restaurant_distance,
-                        'Promotional Offers': restaurant_promos,
-                        'Restaurant Notice': restaurant_notice,
-                        'Image Link': restaurant_photo,
-                        'Is promo available': restaurant_promo_available,
-                        'Restaurant ID': restaurant_id,
-                        'Restaurant latitude and longitude': restaurant_lat_long,
-                        'Estimated Delivery Fee': restaurant_estim_delivery_fee
-                    }
-                )
-
-            self.payload = json.dumps({"latlng": "1.396364,103.747462", "keyword": "", "offset": res_json['searchResult']['offset'], "pageSize": 32, "countryCode": "SG"}) #coordinates hardcoded for PT Singapore - Choa Chu Kang North 6, Singapore, 689577
-            has_more = res_json['searchResult']['hasMore']
-            time.sleep(10)
-
+                self.payload = json.dumps({"latlng": "1.396364,103.747462", "keyword": "", "offset": res_json['searchResult']['offset'], "pageSize": 32, "countryCode": "SG"}) #coordinates hardcoded for PT Singapore - Choa Chu Kang North 6, Singapore, 689577
+                has_more = res_json['searchResult']['hasMore']
+                time.sleep(10)
+        except Exception as e:
+            logging.error(f"Error fetching data: {str(e)}")
         return data
 
     def save_data_to_gzip_ndjson(self, data, file_path):
-        with gzip.open(file_path, 'wt', encoding='utf-8') as f:
-            for item in data:
-                json.dump(item, f)
-                f.write('\n')
+        try:
+            logging.info(f"Saving GrabFood extracted data to file- {file_path}")
+            with gzip.open(file_path, 'wt', encoding='utf-8') as f:
+                for item in data:
+                    json.dump(item, f)
+                    f.write('\n')
+        except Exception as e:
+            logging.error(f"Error saving data to file: {str(e)}")
