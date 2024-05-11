@@ -25,8 +25,7 @@ class GrabDataExtractor:
           'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
           'x-country-code': 'SG',
           'x-gfc-country': 'SG',
-          'x-grab-web-app-version': '~OYFo45UHckSfgUM6xfyV',
-        #   'x-hydra-jwt': 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnYWEiLCJhdWQiOiJnZnciLCJuYW1lIjoiZ3JhYnRheGkiLCJpYXQiOjE3MTU0MjEwNDIsImV4cCI6MTcxNTQyMTY0MiwibmJmIjoxNzE1NDIxMDQyLCJ2ZXIiOiIxLjE5LjAuMjQiLCJicklEIjoiMGRkZjRmM2Y4OGY4NGM2NDEzM2EyMmVlOWI5NDVjNmQ5ZmF5NnIiLCJzdXMiOmZhbHNlLCJicklEdjIiOiI5MDNhNDFiMWMxMjg4ODk5ZTY0MDIyMjlkZTkwOWMzNjI2OXk2ciIsImJyVUlEIjoiZmM4ZmRmYjAtMjM4MS00MDM5LWFkNmEtYzg2OTE4OTc5ZTM4In0.oZdviAe1DhHWXaIy8Mq1zL78weaS5iH-VhEslOH0zlsIXR-0QcMeYmH4NF4NaEKi10q95h71sQcTclJ6S7gks5yaFYdsULUb6nM-hF52xxApNjBZ-7a81mNhMwTMAg-teubwK45omoiSk-LDt9vBt0fm8lfvLFz-aZy5tNzZkJTlTQ3u4FFaWz34mYWHTOgCOfWa0O3x0STg48Rn_XvN63i6XBRS18Db423sOta5sB-MivoNpqugt1xCwsoXf25G6Yr2eVfIpfMxdxERQQUfr_5VXvSdQRVopRZ0q_aaIsxmKHgzRscmM-pAWOQYjhl_BjdLE-76JAFbLzDmDStyZQ'
+          'x-grab-web-app-version': '~OYFo45UHckSfgUM6xfyV'
         }
 
     def fetch_data(self, offset):
