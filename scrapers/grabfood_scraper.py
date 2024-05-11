@@ -47,7 +47,7 @@ class GrabDataExtractor:
                     restaurant_estim_delivery_time = str(restaurant['estimatedDeliveryTime']) + " mins"
                     restaurant_distance = str(restaurant['merchantBrief']['distanceInKm']) + " km"
                     restaurant_promos = restaurant['merchantBrief']['promo'].get('description')
-                    restaurant_notice = restaurant.get('notice')
+                    restaurant_notice = restaurant['merchantBrief'].get('closedText')
                     restaurant_photo = restaurant['merchantBrief'].get('photoHref')
                     restaurant_promo_available = restaurant['merchantBrief']['promo'].get('hasPromo', False)
                     restaurant_id = restaurant['id']
