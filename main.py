@@ -1,9 +1,9 @@
-from scrapers.grabfood_scrapper import GrabDataExtractor
+from scrapers.grabfood_scraper import main as grabfood_main
 
-extractor_map = {'Grab': GrabDataExtractor}
+extractor_map = {'GrabFood': grabfood_main}  #for storing mapping with driver functions of website scrapers
 
-website_to_be_scrapped = 'Grab'  #can change here as per different websites
+websites_to_be_scrapped = ['GrabFood']  #can add and remove websites from here
 
-extractor = extractor_map[website_to_be_scrapped]()
-data = extractor.fetch_data()
-extractor.save_data_to_gzip_ndjson(data, 'extracted_data.gz')
+for website in websites_to_be_scrapped:
+    main_func = extractor_map[website]
+    main_func()
