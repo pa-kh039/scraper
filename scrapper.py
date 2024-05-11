@@ -1,5 +1,7 @@
 import requests
 import time
+import json
+import gzip
 
 url = "https://portal.grab.com/foodweb/v2/search"
 
@@ -61,7 +63,16 @@ while has_more:
                 'Estimated Delivery Fee': restaurant_estim_delivery_fee
             }
         )
-        offset = res_json['searchResult']['offset']
-        has_more = res_json['searchResult']['hasMore']
-        print(data)
-        time.sleep(10)
+
+    offset = res_json['searchResult']['offset']
+    has_more = res_json['searchResult']['hasMore']
+    time.sleep(10)
+    break
+
+def save_data_to_gzip_ndjson(data, file_path):
+    with gzip.open(file_path, 'wt', encoding='utf-8') as f:
+        for item in data:
+            json.dump(item, f)
+            f.write('\n')
+
+save_data_to_gzip_ndjson(data, 'extracted_data.gz')
