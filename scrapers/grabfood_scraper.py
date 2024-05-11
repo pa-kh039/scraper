@@ -39,7 +39,7 @@ class GrabDataExtractor:
             if not res_json['searchResult'].get('searchMerchants'):
                 return data
 
-            for restaurant in res_json['searchResult']['searchMerchants']:
+            for restaurant in res_json['searchResult']['searchMerchants']:  #extracting data for each restaurant from the response
                 try:
                     restaurant_name = restaurant['merchantBrief']['displayInfo']['primaryText']
                     restaurant_cuisine = ", ".join(restaurant['merchantBrief']['cuisine'])
@@ -82,17 +82,18 @@ class GrabDataExtractor:
                 for item in data:
                     json.dump(item, f)
                     f.write('\n')
+            logging.info("Saved !!")
         except Exception as e:
             logging.error(f"Error saving data to file: {str(e)}")
 
 def main():
     extractor = GrabDataExtractor()
-    num_pages = 10  # Number of pages to fetch concurrently
+    num_pages = 10  # Number of pages to fetch concurrently  #this figure is decided after analysing the website
     data = []
 
     with ThreadPoolExecutor() as executor:
         # Fetch data concurrently   #each page of paginated response being fetched by a separate thread
         threads = [executor.submit(extractor.fetch_data, 32*offset) for offset in range(num_pages)]
         for thread in threads:
-            data.extend(thread.result())
+            data.extend(thread.result())  #storing result of each thread
     extractor.save_data_to_gzip_ndjson(data, 'data/extracted_data_GrabFood.gz')
